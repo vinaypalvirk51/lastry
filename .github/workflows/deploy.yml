@@ -27,11 +27,12 @@ jobs:
         run: |
           docker build -t ${{ secrets.REGISTRY_NAME }}/custom-nginx:latest .
           docker push ${{ secrets.REGISTRY_NAME }}/custom-nginx:latest
-
+     
       - name: Set up Azure CLI
-        uses: azure/setup-azure-cli@v1
+        uses: azure/cli@v1
         with:
           version: '2.62.0'
+
 
       - name: Login to Azure
         uses: azure/login@v1
