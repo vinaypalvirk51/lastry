@@ -34,9 +34,10 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS_UPDATED }}
 
       - name: Install kubectl
-        uses: azure/setup-kubectl@v1
-        with:
-          version: '1.26.0'  # Specify the desired kubectl version
+        run: |
+          curl -LO "https://dl.k8s.io/release/v1.26.0/bin/linux/amd64/kubectl"
+          chmod +x ./kubectl
+          sudo mv ./kubectl /usr/local/bin/kubectl
 
       - name: Get AKS credentials
         run: |
