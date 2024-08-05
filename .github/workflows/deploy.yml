@@ -16,31 +16,34 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Log in to Azure Container Registry
+      - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
-          registry: ${{ secrets.REGISTRY_NAME }}
-          username: ${{ secrets.REGISTRY_USERNAME }}
-          password: ${{ secrets.REGISTRY_PASSWORD }}
+          registry: ${{ secrets.AZURE_REGISTRY }}
+          username: ${{ secrets.AZURE_CLIENT_ID }}
+          password: ${{ secrets.AZURE_CLIENT_SECRET }}
 
       - name: Build and push Docker image
         run: |
-          docker build -t ${{ secrets.REGISTRY_NAME }}/custom-nginx:latest .
-          docker push ${{ secrets.REGISTRY_NAME }}/custom-nginx:latest
-     
-      - name: Set up Azure CLI
-        uses: azure/cli@v1
-        with:
-          version: '2.62.0'
-
+          docker build -t ${{ secrets.AZURE_REGISTRY }}/custom-nginx:latest .
+          docker push ${{ secrets.AZURE_REGISTRY }}/custom-nginx:latest
 
       - name: Login to Azure
         uses: azure/login@v1
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          creds: ${{ secrets.AZURE_CREDENTIALS_UPDATED }}
+
+      - name: Install kubectl
+        run: |
+          curl -LO "https://dl.k8s.io/release/v1.26.0/bin/linux/amd64/kubectl"
+          chmod +x ./kubectl
+          sudo mv ./kubectl /usr/local/bin/kubectl
+
+      - name: Get AKS credentials
+        run: |
+          az aks get-credentials --resource-group clustrg --name practiceaks
 
       - name: Deploy to AKS
         run: |
-          az aks get-credentials --resource-group <resource-group> --name <aks-cluster-name>
           kubectl apply -f nginx-deployment.yaml
           kubectl apply -f nginx-service.yaml
