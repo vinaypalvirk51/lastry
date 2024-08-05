@@ -37,7 +37,7 @@ jobs:
 
       - name: Deploy to AKS
         run: |
-          az aks get-credentials --resource-group <resource-group> --name <aks-cluster-name>
+          az aks get-credentials --resource-group clustrg --name practiceaks
           kubectl apply -f nginx-deployment.yaml
           kubectl apply -f nginx-service.yaml
 
