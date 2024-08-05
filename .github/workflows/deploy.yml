@@ -34,6 +34,10 @@ jobs:
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS_UPDATED }}
+
+      - name: Install kubectl
+        run: |
+            az aks install-cli
       
       - name: Set up Azure CLI
         uses: azure/cli@v1
@@ -43,7 +47,5 @@ jobs:
             kubectl apply -f nginx-deployment.yaml
             kubectl apply -f nginx-service.yaml
 
-      - name: Install kubectl
-        run: |
-            az aks install-cli
+      
   
