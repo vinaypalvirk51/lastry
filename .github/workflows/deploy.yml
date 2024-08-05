@@ -22,8 +22,6 @@ jobs:
           registry: ${{ secrets.AZURE_REGISTRY }}
           username: ${{ secrets.AZURE_CLIENT_ID }}
           password: ${{ secrets.AZURE_CLIENT_SECRET }}
-          ecr: auto
-          logout: true
 
       - name: Build and push Docker image
         run: |
@@ -36,16 +34,15 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS_UPDATED }}
 
       - name: Install kubectl
-        run: |
-            az aks install-cli
-      
-      - name: Set up Azure CLI
-        uses: azure/cli@v1
+        uses: azure/setup-kubectl@v1
         with:
-          inlineScript: |
-            az aks get-credentials --resource-group clustrg --name practiceaks
-            kubectl apply -f nginx-deployment.yaml
-            kubectl apply -f nginx-service.yaml
+          version: '1.26.0'  # Specify the desired kubectl version
 
-      
-  
+      - name: Get AKS credentials
+        run: |
+          az aks get-credentials --resource-group clustrg --name practiceaks
+
+      - name: Deploy to AKS
+        run: |
+          kubectl apply -f nginx-deployment.yaml
+          kubectl apply -f nginx-service.yaml
