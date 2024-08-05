@@ -37,14 +37,13 @@ jobs:
       
       - name: Set up Azure CLI
         uses: azure/cli@v1
+        with:
+          inlineScript: |
+            az aks get-credentials --resource-group clustrg --name practiceaks
+            kubectl apply -f nginx-deployment.yaml
+            kubectl apply -f nginx-service.yaml
 
       - name: Install kubectl
         run: |
             az aks install-cli
   
-      - name: Execute Azure CLI commands
-        run: |
-            az aks get-credentials --resource-group clustrg --name practiceaks
-            kubectl apply -f nginx-deployment.yaml
-            kubectl apply -f nginx-service.yaml
-
